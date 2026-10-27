@@ -3,25 +3,14 @@ RV32I 5-Stage Pipelined Processor with AMBA APB Interface
 This repository contains a 32-bit RISC-V (RV32I base integer instruction set) processor core written in Verilog. Designed from scratch, the core features a 5-stage pipeline, full data hazard resolution, and an AMBA APB memory interface. The project includes a SystemVerilog verification environment with functional coverage tracking for both the CPU datapath and the bus protocol.
 
 Microarchitecture Highlights
-5-Stage Datapath: Classic Instruction Fetch (IF), Instruction Decode (ID), Execute (EX), Memory (MEM), and Write-Back (WB) pipeline.
-
-Instruction Support: Decodes and executes core R-type (ADD, SUB, AND, OR, XOR), I-type (ADDI, LW), S-type (SW), and B-type (BEQ) instructions.
-
-
-Hazard Resolution:
-
-A dedicated Forwarding Unit resolves Read-After-Write (RAW) hazards by forwarding ALU or Memory results directly from the EX/MEM and MEM/WB pipeline registers to the Execute stage.
-
-A Hazard Detection Unit monitors for Load-Use hazards, injecting a pipeline bubble and freezing the Program Counter (PC) and IF/ID registers when a stall is required.
-
-
-Register File: 32x32-bit memory array featuring dual asynchronous read ports, a synchronous write port, internal write-to-read bypassing, and hardwired x0 zero-protection.
-
-
+* 5-Stage Datapath: Classic Instruction Fetch (IF), Instruction Decode (ID), Execute (EX), Memory (MEM), and Write-Back (WB) pipeline.
+* Instruction Support: Decodes and executes core R-type (ADD, SUB, AND, OR, XOR), I-type (ADDI, LW), S-type (SW), and B-type (BEQ) instructions.
+* Hazard Resolution: 
+   * A dedicated Forwarding Unit resolves Read-After-Write (RAW) hazards by forwarding ALU or Memory results directly from the EX/MEM and MEM/WB pipeline registers to the Execute stage.
+   * A Hazard Detection Unit monitors for Load-Use hazards, injecting a pipeline bubble and freezing the Program Counter (PC) and IF/ID registers when a stall is required.
+* Register File: 32x32-bit memory array featuring dual asynchronous read ports, a synchronous write port, internal write-to-read bypassing, and hardwired x0 zero-protection.
 
 AMBA APB Integration
 To simulate realistic SoC integration, the pipeline's memory stage does not assume single-cycle, zero-latency memory. Instead, it bridges to an AMBA APB interface:
-
-APB Master FSM: Implements standard IDLE, SETUP, and ACCESS states. It combinationally asserts a stall signal to freeze the entire CPU pipeline the moment a memory request is made, holding the stall until the slave asserts pready.
-
-Wait-State Slave: The included APB memory slave purposefully injects a 1-cycle wait state on every access to verify the CPU's stall mechanics and bus handshake logic.
+* APB Master FSM: Implements standard IDLE, SETUP, and ACCESS states. It combinationally asserts a stall signal to freeze the entire CPU pipeline the moment a memory request is made, holding the stall until the slave asserts `pready`.
+* Wait-State Slave: The included APB memory slave purposefully injects a 1-cycle wait state on every access to verify the CPU's stall mechanics and bus handshake logic.
